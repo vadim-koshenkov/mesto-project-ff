@@ -6,6 +6,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
+let card;
 
 // @todo: Функция создания карточки
 
