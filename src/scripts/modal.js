@@ -1,11 +1,6 @@
 // функция открытия попапа
 function openPopup(popup) {
     popup.classList.add('popup_is-opened');
-    // document.addEventListener('keydown', function(evt) {
-    //     if (evt.key === 'Escape') {
-    //         closePopup(popup);
-    //     }
-    // });
     document.addEventListener('keydown', closePopupByEsc);
 }
 
@@ -25,7 +20,8 @@ function addCloseButtonListener(closeButton) {
 // функция добавления слушателя на кнопку Esc
 function closePopupByEsc(evt) {
     if (evt.key === 'Escape') {
-        closePopup(popup);
+        const currentPopup = document.querySelector('.popup_is-opened');
+        closePopup(currentPopup);
     }
 } 
 
