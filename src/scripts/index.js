@@ -1,10 +1,14 @@
 import '../pages/index.css';
-import { openPopup, closePopup, giveSmoothness, openCard } from './modal.js';
+import { openPopup, closePopup, addCloseButtonListener, giveSmoothness } from './modal.js';
 import { initialCards } from './cards.js';
 import { createCard, deleteCard, likeCard } from './card.js';
 
 // теймплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
+
+// получения массивов попапов и закрытия кнопок попапов
+const popupsArray = document.querySelectorAll('.popup');
+const closeButtonsArray = document.querySelectorAll('.popup__close');
 
 // контейнер, куда будут складываться карточки
 const container = document.querySelector('.content');
@@ -45,24 +49,42 @@ const addCard = function(item) {
 // выведение исходных карточек на страницу
 initialCards.forEach(addCard);
 
+// добавление слушателей клика на все кнопки закрытия попапов
+closeButtonsArray.forEach(addCloseButtonListener);
+
+// добавление слушателя клика на закрытие попапа по клику на оверлей
+document.addEventListener('click', function(evt) {
+    if (evt.target.classList.contains('popup_is-opened') && !evt.target.classList.contains('popup__content')) {
+        closePopup(evt.target.closest('.popup'));
+    }
+});
+
 // функция задания значений форме
-function setFormValue(name, desc) {
+function setProfileFormValue(name, desc) {
     profileFormName.value = name.textContent;
     profileFormDesc.value = desc.textContent;
 }
 
 // функция редактирования профиля
-function handleFormSubmit(evt) {
+function handleProfileFormSubmit(evt) {
     evt.preventDefault();
     profileName.textContent = profileFormName.value;
     profileDesc.textContent = profileFormDesc.value;
     closePopup(profileEditPopup);
 }
 
+  // функция открытия попапа с карточкой
+  function openCard(evt) {
+    cardPopupImage.src = evt.target.src;
+    cardPopupImage.alt = evt.target.alt;
+    cardPopupTitle.textContent = evt.target.alt.slice(18);
+    openPopup(cardOpenPopup);
+  }
+
 // функция создания новой карточки
-function newCardHandler(evt) {
+function createNewCard(evt) {
     evt.preventDefault();
-    let newCard = {
+    const newCard = {
         name: cardAddFormName.value,
         link: cardAddFormLink.value
     };
@@ -75,7 +97,7 @@ function newCardHandler(evt) {
 // Слушатели кликов для открытия попапов
 profileEditButton.addEventListener('click', function() {
     openPopup(profileEditPopup);
-    setFormValue(profileName, profileDesc);
+    setProfileFormValue(profileName, profileDesc);
 });
 
 cardAddButton.addEventListener('click', function() {
@@ -83,12 +105,12 @@ cardAddButton.addEventListener('click', function() {
 });
 
 // слушатель клика для отправки формы редактирования профиля
-profileForm.addEventListener('submit', handleFormSubmit);
+profileForm.addEventListener('submit', handleProfileFormSubmit);
 
 // слушатель клика для отправки формы добавления карточки
-cardAddForm.addEventListener('submit', newCardHandler);
+cardAddForm.addEventListener('submit', createNewCard);
 
 // добавление плавности открытия/закрытия попапам
-document.querySelectorAll('.popup').forEach(giveSmoothness);
+popupsArray.forEach(giveSmoothness);
 
-export { cardTemplate, cardOpenPopup, cardPopupImage, cardPopupTitle }
+export { cardTemplate }
