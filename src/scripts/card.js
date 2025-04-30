@@ -18,11 +18,13 @@ function createCard(
   cardTitle.textContent = cardValue.name;
   cardImage.src = cardValue.link;
   cardImage.alt = `Фотография места: ${cardValue.name}`;
-  if (cardValue.likes.some(function (like) {
-    return like._id == profileInfo._id;
-  })) {
-    likeButton.classList.add('card__like-button_is-active');
-  };
+  if (
+    cardValue.likes.some(function (like) {
+      return like._id == profileInfo._id;
+    })
+  ) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
   setLikesNumber(cardValue, likeCounter);
   if (profileInfo) {
     if (cardValue.owner._id !== profileInfo._id) {
@@ -32,7 +34,7 @@ function createCard(
   deleteButton.addEventListener("click", function () {
     deleteFunction(cardElement, cardValue);
   });
-  likeButton.addEventListener("click", function(evt) {
+  likeButton.addEventListener("click", function (evt) {
     likeFunction(evt, cardValue, likeCounter);
   });
   cardImage.addEventListener("click", openFunction);
@@ -53,19 +55,16 @@ function setLikesNumber(cardValue, likeCounterElement) {
 
 // функция лайка, колбэк функции создания
 function likeCard(evt, cardValue, likeCounterElement) {
-  if (!evt.target.classList.contains('card__like-button_is-active')) {
-    addLikeAPI(cardValue._id)
-    .then((cardValue) => {
-      evt.target.classList.add('card__like-button_is-active');
+  if (!evt.target.classList.contains("card__like-button_is-active")) {
+    addLikeAPI(cardValue._id).then((cardValue) => {
+      evt.target.classList.add("card__like-button_is-active");
       setLikesNumber(cardValue, likeCounterElement);
-    })
-  }
-  else {
-    removeLikeAPI(cardValue._id)
-    .then((cardValue) => {
-      evt.target.classList.remove('card__like-button_is-active');
+    });
+  } else {
+    removeLikeAPI(cardValue._id).then((cardValue) => {
+      evt.target.classList.remove("card__like-button_is-active");
       setLikesNumber(cardValue, likeCounterElement);
-    })
+    });
   }
 }
 
