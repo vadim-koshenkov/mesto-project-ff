@@ -63,7 +63,7 @@ function setEventListeners (formElement, validationSettings) {
     const inputList = Array.from(formElement.querySelectorAll(validationSettings.inputSelector));
     const buttonElement = formElement.querySelector(validationSettings.submitButtonSelector);
     inputList.forEach(function (inputElement) {
-        inputElement.addEventListener('input', function () {
+        inputElement.addEventListener("input", function () {
             isValid(formElement, inputElement, validationSettings);
             toggleButtonState(inputList, buttonElement, validationSettings);
         });

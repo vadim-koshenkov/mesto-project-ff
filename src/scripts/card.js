@@ -1,5 +1,6 @@
-import { cardTemplate } from "./index.js";
+import { cardTemplate, cardDeletePopup, cardDeleteSubmitButton } from "./index.js";
 import { removeCardAPI, addLikeAPI, removeLikeAPI } from "./api.js";
+import { closePopup, openPopup } from "./modal.js";
 
 // функция создания карточки
 function createCard(
@@ -32,7 +33,11 @@ function createCard(
     }
   }
   deleteButton.addEventListener("click", function () {
-    deleteFunction(cardElement, cardValue);
+    openPopup(cardDeletePopup);
+    cardDeleteSubmitButton.addEventListener("click", function() {
+      deleteFunction(cardElement, cardValue);
+      closePopup(cardDeletePopup);
+    })
   });
   likeButton.addEventListener("click", function (evt) {
     likeFunction(evt, cardValue, likeCounter);
@@ -44,8 +49,10 @@ function createCard(
 
 // функция удаления карточки, колбэк функции создания
 function deleteCard(card, cardValue) {
-  card.remove();
-  removeCardAPI(cardValue._id);
+  removeCardAPI(cardValue._id)
+  .then(function() {
+    card.remove();
+  });
 }
 
 // функция установки количества лайков карточке

@@ -61,6 +61,10 @@ const cardOpenPopup = document.querySelector(".popup_type_image");
 const cardPopupImage = cardOpenPopup.querySelector(".popup__image");
 const cardPopupTitle = cardOpenPopup.querySelector(".popup__caption");
 
+// элементы попапа удаления карточки
+const cardDeletePopup = document.querySelector(".popup_type_submit_delete");
+const cardDeleteSubmitButton = cardDeletePopup.querySelector(".popup__button");
+
 // объект элементов валидации
 const validationConfig = {
   formSelector: ".popup__form",
@@ -120,29 +124,44 @@ function setProfileFormValue(name, desc) {
   profileFormDesc.value = desc.textContent;
 }
 
+// функция задания лоадера кнопке сабмита попапа
+function setButtonLoader(popup) {
+  popup.querySelector(".popup__button").textContent = "Сохранение...";
+}
+
+// функция снятия лоадера кнопки сабмита попапа
+function resetButtonLoader(popup) {
+  popup.querySelector(".popup__button").textContent = "Сохранить";
+}
+
 // функция редактирования профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  changeProfileSettingsAPI(profileFormName.value, profileFormDesc.value).then(
+  setButtonLoader(profileEditPopup);
+  changeProfileSettingsAPI(profileFormName.value, profileFormDesc.value)
+  .then(
     (profileInfo) => {
       profileName.textContent = profileInfo.name;
       profileDesc.textContent = profileInfo.about;
+      closePopup(profileEditPopup);
+      resetButtonLoader(profileEditPopup);
     }
   );
-  closePopup(profileEditPopup);
 }
 
 // функция редактирования фотографии профиля
 function handleProfilePhotoFormSubmit(evt) {
   evt.preventDefault();
+  setButtonLoader(profilePhotoEditPopup);
   changeProfileAvatarAPI(profilePhotoFormLink.value).then((profileInfo) => {
     profileImage.setAttribute(
       "style",
-      `backgroung-image: url("${profileInfo.avatar}")`
+      `background-image: url("${profileInfo.avatar}")`
     );
+    closePopup(profilePhotoEditPopup);
+    resetButtonLoader(profilePhotoEditPopup);
+    resetFormValues(profilePhotoForm);
   });
-  closePopup(profilePhotoEditPopup);
-  resetFormValue(profilePhotoFormLink);
 }
 
 // функция открытия попапа с карточкой
@@ -153,14 +172,17 @@ function openCard(evt) {
   openPopup(cardOpenPopup);
 }
 
-// функция сброса значения формы
-function resetFormValue(formElement) {
-  formElement.value = "";
+// функция сброса значений формы
+function resetFormValues(formValue) {
+  Array.from(formValue.elements).forEach((formElement) => {
+    formElement.value = '';
+  })
 }
 
 // функция создания новой карточки
 function createNewCard(evt) {
   evt.preventDefault();
+  setButtonLoader(cardAddPopup);
   const newCardValue = {
     name: cardAddFormName.value,
     link: cardAddFormLink.value,
@@ -170,10 +192,9 @@ function createNewCard(evt) {
       createCard(newCardValue, deleteCard, likeCard, openCard)
     );
     closePopup(cardAddPopup);
-    resetAddFormValues();
-    resetFormValue(cardAddFormName);
-    resetFormValue(cardAddFormLink);
+    resetFormValues(cardAddForm);
     clearValidation(cardAddForm, validationConfig);
+    resetButtonLoader(cardAddPopup);
   });
 }
 
@@ -194,7 +215,7 @@ profileImage.addEventListener("click", function () {
 cardAddButton.addEventListener("click", function () {
   openPopup(cardAddPopup);
   clearValidation(cardAddForm, validationConfig);
-});
+})
 
 // слушатель клика для отправки формы редактирования профиля
 profileForm.addEventListener("submit", handleProfileFormSubmit);
@@ -211,4 +232,4 @@ popupsArray.forEach(giveSmoothness);
 //  валидация всех форм страницы
 enableValidation(validationConfig);
 
-export { cardTemplate };
+export { cardTemplate, cardDeletePopup, cardDeleteSubmitButton };
