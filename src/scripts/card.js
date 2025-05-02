@@ -1,6 +1,5 @@
-import { cardTemplate, cardDeletePopup, cardDeleteSubmitButton } from "./index.js";
+import { cardTemplate, openDeletePopup, closeDeletePopup, cardDeleteSubmitButton } from "./index.js";
 import { removeCardAPI, addLikeAPI, removeLikeAPI } from "./api.js";
-import { closePopup, openPopup } from "./modal.js";
 
 // функция создания карточки
 function createCard(
@@ -32,12 +31,14 @@ function createCard(
       deleteButton.remove();
     }
   }
-  deleteButton.addEventListener("click", function () {
-    openPopup(cardDeletePopup);
-    cardDeleteSubmitButton.addEventListener("click", function() {
+  deleteButton.addEventListener("click", function() {
+    openDeletePopup(cardValue);
+  });
+  cardDeleteSubmitButton.addEventListener("click", function() {
+    if(cardDeleteSubmitButton.getAttribute("data-card-id") === cardValue._id) {
       deleteFunction(cardElement, cardValue);
-      closePopup(cardDeletePopup);
-    })
+      closeDeletePopup();
+    }
   });
   likeButton.addEventListener("click", function (evt) {
     likeFunction(evt, cardValue, likeCounter);
@@ -48,10 +49,13 @@ function createCard(
 }
 
 // функция удаления карточки, колбэк функции создания
-function deleteCard(card, cardValue) {
+function deleteCard(cardElement, cardValue) {
   removeCardAPI(cardValue._id)
   .then(function() {
-    card.remove();
+    cardElement.remove();
+  })
+  .catch((err) => {
+    console.log(err);
   });
 }
 
@@ -66,11 +70,18 @@ function likeCard(evt, cardValue, likeCounterElement) {
     addLikeAPI(cardValue._id).then((cardValue) => {
       evt.target.classList.add("card__like-button_is-active");
       setLikesNumber(cardValue, likeCounterElement);
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  } else {
+  } 
+  else {
     removeLikeAPI(cardValue._id).then((cardValue) => {
       evt.target.classList.remove("card__like-button_is-active");
       setLikesNumber(cardValue, likeCounterElement);
+    })
+    .catch((err) => {
+      console.log(err);
     });
   }
 }
