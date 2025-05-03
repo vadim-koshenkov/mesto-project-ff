@@ -1,10 +1,9 @@
-import { cardTemplate, openDeletePopup, closeDeletePopup, cardDeleteSubmitButton } from "./index.js";
+import { cardTemplate, openDeletePopup } from "./index.js";
 import { removeCardAPI, addLikeAPI, removeLikeAPI } from "./api.js";
 
 // функция создания карточки
 function createCard(
   cardValue,
-  deleteFunction,
   likeFunction,
   openFunction,
   profileInfo
@@ -34,29 +33,21 @@ function createCard(
   deleteButton.addEventListener("click", function() {
     openDeletePopup(cardValue);
   });
-  cardDeleteSubmitButton.addEventListener("click", function() {
-    if(cardDeleteSubmitButton.getAttribute("data-card-id") === cardValue._id) {
-      deleteFunction(cardElement, cardValue);
-      closeDeletePopup();
-    }
-  });
   likeButton.addEventListener("click", function (evt) {
     likeFunction(evt, cardValue, likeCounter);
   });
   cardImage.addEventListener("click", openFunction);
+  cardElement.setAttribute("data-card-id", `${cardValue._id}`);
 
   return cardElement;
 }
 
-// функция удаления карточки, колбэк функции создания
-function deleteCard(cardElement, cardValue) {
-  removeCardAPI(cardValue._id)
-  .then(function() {
+// функция удаления карточки
+function deleteCard(cardElement, cardID) {
+  return removeCardAPI(cardID)
+  .then(() => {
     cardElement.remove();
   })
-  .catch((err) => {
-    console.log(err);
-  });
 }
 
 // функция установки количества лайков карточке

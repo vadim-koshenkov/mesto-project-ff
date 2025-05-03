@@ -75,6 +75,8 @@ const validationConfig = {
   errorClass: "popup__input_error-active",
 };
 
+let cardToDeleteElement;
+
 // устанавливаем значения профиля и выводим все серверные карточки на страницу
 Promise.all([getProfileInittialsAPI(), getInittialCardsAPI()])
   .then(([res1, res2]) => {
@@ -90,7 +92,7 @@ Promise.all([getProfileInittialsAPI(), getInittialCardsAPI()])
     // выводим карточки на страницу
     data.inittialCards.forEach(function (cardValue) {
       cardsContainer.append(
-        createCard(cardValue, deleteCard, likeCard, openCard, data.profileInfo)
+        createCard(cardValue, likeCard, openCard, data.profileInfo)
       );
     });
   })
@@ -203,6 +205,16 @@ function resetFormValues(formValue) {
   })
 }
 
+// получаем карточку, подготовленную для удаления
+function getCardToDelete () {
+  const cardsArray = cardsContainer.querySelectorAll(".card");
+  return cardsArray.forEach((card) => {
+    if (card.getAttribute("data-card-id") === cardDeleteSubmitButton.getAttribute("data-card-id")) {
+      cardToDeleteElement = card;
+    }
+  });
+}
+
 // функция создания новой карточки
 function createNewCard(evt) {
   evt.preventDefault();
@@ -214,7 +226,7 @@ function createNewCard(evt) {
   postNewCardAPI(newCardValue.name, newCardValue.link)
   .then((newCardValue) => {
     cardsContainer.prepend(
-      createCard(newCardValue, deleteCard, likeCard, openCard)
+      createCard(newCardValue, likeCard, openCard)
     );
     closePopup(cardAddPopup);
     resetFormValues(cardAddForm);
@@ -256,10 +268,22 @@ cardAddForm.addEventListener("submit", createNewCard);
 // слушатель клика для отправки формы редактирования фотографии профиля
 profilePhotoForm.addEventListener("submit", handleProfilePhotoFormSubmit);
 
+// слушатель клика для удаления карточки
+cardDeleteSubmitButton.addEventListener("click", function() {
+  getCardToDelete();
+    deleteCard(cardToDeleteElement, cardToDeleteElement.getAttribute("data-card-id"))
+    .then(() => {
+      closeDeletePopup();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+});
+
 // добавление плавности открытия/закрытия попапам
 popupsArray.forEach(giveSmoothness);
 
 //  валидация всех форм страницы
 enableValidation(validationConfig);
 
-export { cardTemplate, openDeletePopup, closeDeletePopup, cardDeleteSubmitButton };
+export { cardTemplate, openDeletePopup };
